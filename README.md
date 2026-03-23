@@ -86,7 +86,7 @@ tilt up
 If pods fail with `ErrImagePull` for `ride-sharing/*` images while using the `docker-desktop` context, run:
 
 ```powershell
-.\infra\development\docker\sync-tilt-images.bat
+.\infra\development\docker\sync-tilt-images.ps1
 ```
 
 This command will:
