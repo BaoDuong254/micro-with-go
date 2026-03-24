@@ -2,7 +2,7 @@
 
 ## Project overview
 
-A backend microservices system for a Uber‑style ride‑sharing app from the ground up—using Go, Docker, and Kubernetes.
+A backend microservices system for a Uber‑style ride‑sharing app from the ground up - using Go, Docker, and Kubernetes.
 
 ## Trip Scheduling Flow
 
