@@ -6,8 +6,8 @@ import (
 	"net"
 	"os"
 	"os/signal"
-	"ride-sharing/services/driver-service/internal/grpc"
 	"ride-sharing/services/driver-service/internal/infrastructure/events"
+	"ride-sharing/services/driver-service/internal/infrastructure/grpc"
 	"ride-sharing/services/driver-service/internal/service"
 	"ride-sharing/shared/env"
 	"ride-sharing/shared/messaging"
@@ -50,8 +50,7 @@ func main() {
 	grpcServer := grpcserver.NewServer()
 	grpc.NewGrpcHandler(grpcServer, svc)
 
-	// Start consuming messages
-	consumer := events.NewTripConsumer(rabbitmq)
+	consumer := events.NewTripConsumer(rabbitmq, svc)
 	go func() {
 		if err := consumer.Listen(); err != nil {
 			log.Fatalf("Failed to listen to the message: %v", err)
