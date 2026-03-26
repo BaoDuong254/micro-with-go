@@ -4,6 +4,7 @@ go 1.24.0
 
 require (
 	github.com/gorilla/websocket v1.5.3
+	github.com/rabbitmq/amqp091-go v1.10.0
 	go.mongodb.org/mongo-driver v1.17.9
 	google.golang.org/grpc v1.79.3
 	google.golang.org/protobuf v1.36.11
