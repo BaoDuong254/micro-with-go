@@ -54,8 +54,12 @@ func main() {
 	driverConsumer := events.NewDriverConsumer(rabbitmq, svc)
 	go driverConsumer.Listen()
 
-	grpcServer := grpcserver.NewServer()
+	// Start payment consumer
+	paymentConsumer := events.NewPaymentConsumer(rabbitmq, svc)
+	go paymentConsumer.Listen()
 
+	// Create gRPC server and register handlers
+	grpcServer := grpcserver.NewServer()
 	grpc.NewGRPCHandler(grpcServer, svc, publisher)
 
 	log.Printf("Starting gRPC server Trip service on port %s", lis.Addr().String())
