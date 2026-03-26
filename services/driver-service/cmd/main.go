@@ -6,10 +6,9 @@ import (
 	"net"
 	"os"
 	"os/signal"
-	"ride-sharing/services/trip-service/internal/infrastructure/events"
-	"ride-sharing/services/trip-service/internal/infrastructure/grpc"
-	"ride-sharing/services/trip-service/internal/infrastructure/repository"
-	"ride-sharing/services/trip-service/internal/service"
+	"ride-sharing/services/driver-service/internal/infrastructure/events"
+	"ride-sharing/services/driver-service/internal/infrastructure/grpc"
+	"ride-sharing/services/driver-service/internal/service"
 	"ride-sharing/shared/env"
 	"ride-sharing/shared/messaging"
 	"syscall"
@@ -17,16 +16,13 @@ import (
 	grpcserver "google.golang.org/grpc"
 )
 
-var GrpcAddr = ":9093"
+var GrpcAddr = ":9092"
 
 func main() {
 	rabbitMqURI := env.GetString("RABBITMQ_URI", "amqp://guest:guest@rabbitmq:5672/")
-	inmemRepo := repository.NewInmemRepository()
-	svc := service.NewService(inmemRepo)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	// Listen for interrupt signals to gracefully shutdown the server
 	go func() {
 		sigCh := make(chan os.Signal, 1)
 		signal.Notify(sigCh, os.Interrupt, syscall.SIGTERM)
@@ -39,6 +35,8 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
+	svc := service.NewService()
+
 	// RabbitMQ connection
 	rabbitmq, err := messaging.NewRabbitMQ(rabbitMqURI)
 	if err != nil {
@@ -48,15 +46,19 @@ func main() {
 
 	log.Println("Starting RabbitMQ connection")
 
-	publisher := events.NewTripEventPublisher(rabbitmq)
-
+	// Starting the gRPC server
 	grpcServer := grpcserver.NewServer()
+	grpc.NewGrpcHandler(grpcServer, svc)
 
-	grpc.NewGRPCHandler(grpcServer, svc, publisher)
+	consumer := events.NewTripConsumer(rabbitmq, svc)
+	go func() {
+		if err := consumer.Listen(); err != nil {
+			log.Fatalf("Failed to listen to the message: %v", err)
+		}
+	}()
 
-	log.Printf("Starting gRPC server Trip service on port %s", lis.Addr().String())
+	log.Printf("Starting gRPC server Driver service on port %s", lis.Addr().String())
 
-	// Start the gRPC server in a separate goroutine
 	go func() {
 		if err := grpcServer.Serve(lis); err != nil {
 			log.Printf("failed to serve: %v", err)
