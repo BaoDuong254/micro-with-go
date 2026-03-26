@@ -123,6 +123,7 @@ func handleDriversWebSocket(w http.ResponseWriter, r *http.Request, rb *messagin
 	queues := []string{
 		messaging.DriverCmdTripRequestQueue,
 		messaging.NotifyDriverAssignQueue,
+		messaging.NotifyPaymentSessionCreatedQueue,
 	}
 
 	for _, q := range queues {
