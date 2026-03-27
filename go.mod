@@ -9,6 +9,7 @@ require (
 	github.com/rabbitmq/amqp091-go v1.10.0
 	github.com/stripe/stripe-go/v81 v81.4.0
 	go.mongodb.org/mongo-driver v1.17.9
+	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.67.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.67.0
 	go.opentelemetry.io/otel v1.42.0
 	go.opentelemetry.io/otel/exporters/jaeger v1.17.0
@@ -25,8 +26,8 @@ require (
 	github.com/go-logr/stdr v1.2.2 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.opentelemetry.io/otel/metric v1.42.0 // indirect
-	golang.org/x/net v0.48.0 // indirect
+	golang.org/x/net v0.51.0 // indirect
 	golang.org/x/sys v0.41.0 // indirect
-	golang.org/x/text v0.32.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20251202230838-ff82c1b0f217 // indirect
+	golang.org/x/text v0.34.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260226221140-a57be14db171 // indirect
 )
