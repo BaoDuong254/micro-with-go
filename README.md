@@ -127,7 +127,7 @@ It's advisable to first run the steps manually and then build a proper CI/CD flo
 ## 0. Environments
 
 ```bash
-REGION: europe-west1 # change according to your location
+REGION: asia-southeast1 # change according to your location
 PROJECT_ID: <your-gcp-project-id>
 ```
 
