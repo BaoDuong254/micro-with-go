@@ -10,6 +10,7 @@ require (
 	github.com/stripe/stripe-go/v81 v81.4.0
 	go.mongodb.org/mongo-driver v1.17.9
 	go.opentelemetry.io/otel v1.39.0
+	go.opentelemetry.io/otel/exporters/jaeger v1.17.0
 	go.opentelemetry.io/otel/sdk v1.39.0
 	google.golang.org/grpc v1.79.3
 	google.golang.org/protobuf v1.36.11
