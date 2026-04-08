@@ -1,3 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rabbitmq-config
+data:
+  rabbitmq.conf: |
+    # Keep local development logs focused on warnings/errors.
+    log.console.level = warning
+    log.connection.level = warning
+    deprecated_features.permit.management_metrics_collection = true
+---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -19,26 +30,34 @@ spec:
           ports:
             - containerPort: 5672 # AMQP port
             - containerPort: 15672 # Management UI port
+          startupProbe:
+            exec:
+              command: ["rabbitmq-diagnostics", "check_running"]
+            # RabbitMQ may take a while to recover Mnesia and plugins on local clusters.
+            periodSeconds: 10
+            timeoutSeconds: 30
+            failureThreshold: 30
           readinessProbe:
             exec:
               command: ["rabbitmq-diagnostics", "check_running"]
-            initialDelaySeconds: 20
+            initialDelaySeconds: 30
             periodSeconds: 10
-            timeoutSeconds: 15
-            failureThreshold: 3
+            timeoutSeconds: 30
+            failureThreshold: 6
           livenessProbe:
             exec:
               command: ["rabbitmq-diagnostics", "check_running"]
-            initialDelaySeconds: 60
+            initialDelaySeconds: 120
             periodSeconds: 30
-            timeoutSeconds: 15
+            timeoutSeconds: 30
+            failureThreshold: 6
           resources:
             requests:
-              memory: "512Mi"
-              cpu: "250m"
+              memory: "256Mi"
+              cpu: "100m"
             limits:
-              memory: "512Mi"
-              cpu: "250m"
+              memory: "1Gi"
+              cpu: "1"
           env:
             - name: RABBITMQ_DEFAULT_USER
               valueFrom:
@@ -53,8 +72,15 @@ spec:
             - name: RABBITMQ_MNESIA_BASE
               value: /var/lib/rabbitmq/mnesia
           volumeMounts:
+            - name: rabbitmq-config
+              mountPath: /etc/rabbitmq/rabbitmq.conf
+              subPath: rabbitmq.conf
             - name: rabbitmq-data
               mountPath: /var/lib/rabbitmq
+      volumes:
+        - name: rabbitmq-config
+          configMap:
+            name: rabbitmq-config
   volumeClaimTemplates:
     - metadata:
         name: rabbitmq-data
